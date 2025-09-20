@@ -4,7 +4,7 @@
 .app {
     display: grid;
     grid-template-columns: 320px auto; // left fixed, right flexible
-    max-width: 80%;
+    max-width: 70%;
     gap: $spacing-sm;
     padding: $spacing-lg;
     margin: auto;
