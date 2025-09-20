@@ -1,0 +1,55 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.card {
+  position: relative;
+  perspective: 800px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  cursor: pointer;
+
+  &.flipped .cardInner {
+    transform: rotateY(180deg);
+  }
+}
+
+.cardInner {
+  position: absolute;
+  inset: 0;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.cardFront,
+.cardBack {
+  @include center-flex(row, center, center);
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  font-size: clamp(1rem, 2vw, 2rem);
+  border-radius: $border-radius;
+  user-select: none;
+}
+
+.cardBack {
+  background: linear-gradient(135deg, $gradient-dark, $gradient-mid, $gradient-light);
+  border: 2px solid $color-muted;
+  color: $color-white;
+  font-size: $font-title-md;
+
+  @include respond-to(sm) {
+    font-size: $font-title-sm;
+  }
+}
+
+.cardFront {
+  border: 2px solid $color-muted;
+  background-color: $color-white;
+  font-size: $font-title-md;
+  transform: rotateY(180deg);
+
+  @include respond-to(sm) {
+    font-size: $font-title-sm;
+  }
+}

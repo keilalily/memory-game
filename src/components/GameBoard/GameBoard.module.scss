@@ -1,0 +1,20 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.gameBoard {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 1fr);
+    gap: 4px;
+    width: 100%;
+    max-width: 100%;
+    justify-items: center;
+    padding: $spacing-md;
+
+    @include respond-to(md) {
+        padding: $spacing-sm;
+    }
+
+    @include respond-to(sm) {
+        padding: 0;
+    }
+}

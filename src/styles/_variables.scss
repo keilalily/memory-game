@@ -1,0 +1,32 @@
+// Colors
+$color-white: #ffffff;
+$color-shadow: rgba(0, 0, 0, 0.1);
+$color-primary: #0070f3; // example, can be used for buttons
+$color-background: #19183b;
+$color-text: #333333;
+$color-muted: #cccccc;
+
+// Gradient colors
+$gradient-dark: #6366f1;
+$gradient-mid: #3b82f6;
+$gradient-light: #06b6d4;
+
+// Spacing
+$spacing-xs: 0.5rem;
+$spacing-sm: 1rem;
+$spacing-md: 1.5rem;
+$spacing-lg: 2rem;
+
+// Font sizes
+$font-title-md: 2rem;
+$font-title-sm: 1rem;
+
+// Border radius
+$border-radius: 8px;
+
+// Breakpoints
+$breakpoint-sm: 425px;
+$breakpoint-md: 768px;
+
+// Shadows
+$shadow-default: 0 2px 6px $color-shadow;

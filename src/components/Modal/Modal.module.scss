@@ -1,0 +1,35 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    @include center-flex(row, center, center);
+    z-index: 1000;
+}
+
+.modal {
+    @include center-flex(column, center, center);
+    background: $color-white;
+    padding: $spacing-lg;
+    border-radius: $border-radius;
+    box-shadow: $shadow-default;
+    max-width: 90%;
+    text-align: center;
+    gap: $spacing-sm;
+}
+
+.closeButton {
+    padding: $spacing-xs $spacing-sm;
+    border: none;
+    border-radius: $border-radius;
+    background: $color-primary;
+    color: $color-white;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+
+    &:hover {
+        background-color: darken($color-primary, 15%);
+    }
+}

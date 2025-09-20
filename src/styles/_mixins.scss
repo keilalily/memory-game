@@ -1,0 +1,18 @@
+@use './variables' as *;
+
+// Media query helpers
+@mixin respond-to($breakpoint) {
+    @if $breakpoint == sm {
+        @media (max-width: $breakpoint-sm) { @content; }
+    } @else if $breakpoint == md {
+        @media (max-width: $breakpoint-md) { @content; }
+    }
+}
+
+// Center content
+@mixin center-flex($direction: row, $justify: center, $align: center) {
+    display: flex;
+    flex-direction: $direction;
+    justify-content: $justify;
+    align-items: $align;
+}

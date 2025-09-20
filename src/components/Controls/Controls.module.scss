@@ -1,0 +1,43 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.controls {
+  @include center-flex(column, center, center);
+  gap: $spacing-md;
+  margin: $spacing-sm 0;
+}
+
+.stats {
+  @include center-flex(row, center, center);
+  width: 100%;
+  gap: $spacing-xs;
+}
+
+.stat {
+  @include center-flex(column, center, center);
+  flex: 1;
+  gap: $spacing-xs;
+  padding: $spacing-sm;
+  border: 2px solid $color-muted;
+  border-radius: $border-radius;
+
+  & span {
+    font-weight: bold;
+  }
+}
+
+.restartButton {
+  padding: $spacing-xs $spacing-md;
+  background-color: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $border-radius;
+  cursor: pointer;
+  font-size: $font-title-sm;
+  font-weight: 600;
+  transition: background-color 0.2s ease-in-out;
+
+  &:hover {
+    background-color: darken($color-primary, 15%);
+  }
+}
