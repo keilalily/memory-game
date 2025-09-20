@@ -34,7 +34,15 @@ export default function App() {
     <div className={styles.app}>
       <div className={styles.leftPanel}>
         <h1 className={styles.title}>Memory Game</h1>
-        <DifficultySelector difficulty={difficulty} onChange={setDifficulty} />
+        <DifficultySelector
+          difficulty={difficulty}
+          onChange={(newDifficulty) => {
+            setDifficulty(newDifficulty);
+            setMoves(0);
+            reset(); // reset timer
+            setGameKey((prev) => prev + 1); // remount GameBoard with new deck
+          }}
+        />
         <Controls moves={moves} time={time} onRestart={handleRestart} />
       </div>
       <div className={styles.rightPanel}>

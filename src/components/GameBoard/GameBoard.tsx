@@ -20,8 +20,10 @@ const difficultySizes: Record<Difficulty, number> = {
 
 export default function GameBoard({ difficulty, onMove, onGameStart, onGameEnd }: GameBoardProps) {
     const [cards, setCards] = useState<CardType[]>([]);
+    const [, setFlippedCards] = useState<CardType[]>([]);
     const [isGameOver, setIsGameOver] = useState(false);
     const hasStarted = React.useRef(false);
+    const pendingPair = React.useRef<CardType[]>([]);
     const [isLocked, setIsLocked] = useState(false);
 
     // Initialize deck
@@ -36,6 +38,7 @@ export default function GameBoard({ difficulty, onMove, onGameStart, onGameEnd }
             isMatched: false,
         }));
         setCards(deck);
+        setFlippedCards([]);
         setIsGameOver(false);
         
         hasStarted.current = false;
@@ -43,7 +46,7 @@ export default function GameBoard({ difficulty, onMove, onGameStart, onGameEnd }
 
     const handleCardClick = (card: CardType) => {
         if (isLocked) return; // block clicks while waiting to flip back
-        // Prevent clicking same card again
+
         if (card.isFlipped || card.isMatched) return;
 
         if (!hasStarted.current) {
@@ -52,43 +55,44 @@ export default function GameBoard({ difficulty, onMove, onGameStart, onGameEnd }
         }
 
         setCards((prev) => {
-            // flip the clicked card
             const updated = prev.map((c) =>
                 c.id === card.id ? { ...c, isFlipped: true } : c
             );
 
-            // get flipped but unmatched cards from the *updated* state
             const flippedUnmatched = updated.filter(
                 (c) => c.isFlipped && !c.isMatched
             );
 
-            if (flippedUnmatched.length === 2) {
+            if (flippedUnmatched.length === 2 && pendingPair.current.length === 0) {
+                // store the pair so we don't double-count
+                pendingPair.current = flippedUnmatched;
                 onMove();
+
                 const [firstCard, secondCard] = flippedUnmatched;
 
                 if (firstCard.value === secondCard.value) {
-                    // match
                     setTimeout(() => {
-                        setCards((cards) =>
-                            cards.map((c) =>
-                                c.value === firstCard.value
-                                    ? { ...c, isMatched: true }
-                                    : c
-                            )
-                        );
+                    setCards((cards) =>
+                        cards.map((c) =>
+                        c.value === firstCard.value
+                            ? { ...c, isMatched: true }
+                            : c
+                        )
+                    );
+                    pendingPair.current = []; // reset
                     }, 200);
                 } else {
-                    // no match
                     setIsLocked(true);
                     setTimeout(() => {
-                        setCards((cards) =>
-                            cards.map((c) =>
-                                c.id === firstCard.id || c.id === secondCard.id
-                                    ? { ...c, isFlipped: false }
-                                    : c
-                            )
-                        );
-                        setIsLocked(false);
+                    setCards((cards) =>
+                        cards.map((c) =>
+                        c.id === firstCard.id || c.id === secondCard.id
+                            ? { ...c, isFlipped: false }
+                            : c
+                        )
+                    );
+                    setIsLocked(false);
+                    pendingPair.current = []; // reset
                     }, 1000);
                 }
             }
