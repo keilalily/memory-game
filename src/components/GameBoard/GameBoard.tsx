@@ -20,7 +20,6 @@ const difficultySizes: Record<Difficulty, number> = {
 
 export default function GameBoard({ difficulty, onMove, onGameStart, onGameEnd }: GameBoardProps) {
     const [cards, setCards] = useState<CardType[]>([]);
-    const [flippedCards, setFlippedCards] = useState<CardType[]>([]);
     const [isGameOver, setIsGameOver] = useState(false);
     const hasStarted = React.useRef(false);
     const [isLocked, setIsLocked] = useState(false);
@@ -37,7 +36,6 @@ export default function GameBoard({ difficulty, onMove, onGameStart, onGameEnd }
             isMatched: false,
         }));
         setCards(deck);
-        setFlippedCards([]);
         setIsGameOver(false);
         
         hasStarted.current = false;
@@ -45,61 +43,58 @@ export default function GameBoard({ difficulty, onMove, onGameStart, onGameEnd }
 
     const handleCardClick = (card: CardType) => {
         if (isLocked) return; // block clicks while waiting to flip back
+        // Prevent clicking same card again
+        if (card.isFlipped || card.isMatched) return;
 
-        setFlippedCards((prev) => {
-            // Prevent clicking the same card again
-            if (prev.some((c) => c.id === card.id)) return prev;
+        if (!hasStarted.current) {
+            onGameStart();
+            hasStarted.current = true;
+        }
 
-            // Case 1: first card flipped
-            if (prev.length === 0) {
-                flipCard(card.id);
+        setCards((prev) => {
+            // flip the clicked card
+            const updated = prev.map((c) =>
+                c.id === card.id ? { ...c, isFlipped: true } : c
+            );
 
-                if (!hasStarted.current) {
-                    onGameStart();
-                    hasStarted.current = true;
-                }
+            // get flipped but unmatched cards from the *updated* state
+            const flippedUnmatched = updated.filter(
+                (c) => c.isFlipped && !c.isMatched
+            );
 
-                return [card];
-            }
-
-            // Case 2: second card flipped
-            if (prev.length === 1) {
-                flipCard(card.id);
+            if (flippedUnmatched.length === 2) {
                 onMove();
+                const [firstCard, secondCard] = flippedUnmatched;
 
-                const firstCard = prev[0];
-
-                if (firstCard.value === card.value) {
-                    // ✅ Match
+                if (firstCard.value === secondCard.value) {
+                    // match
                     setTimeout(() => {
                         setCards((cards) =>
                             cards.map((c) =>
-                                c.value === card.value ? { ...c, isMatched: true } : c
+                                c.value === firstCard.value
+                                    ? { ...c, isMatched: true }
+                                    : c
                             )
                         );
                     }, 200);
-                    return [];
                 } else {
-                    // ❌ No match → lock and flip back later
+                    // no match
                     setIsLocked(true);
                     setTimeout(() => {
-                        flipCard(firstCard.id, false);
-                        flipCard(card.id, false);
-                        setFlippedCards([]);
+                        setCards((cards) =>
+                            cards.map((c) =>
+                                c.id === firstCard.id || c.id === secondCard.id
+                                    ? { ...c, isFlipped: false }
+                                    : c
+                            )
+                        );
                         setIsLocked(false);
                     }, 1000);
-                    return [...prev, card]; // temporarily store for feedback
                 }
             }
 
-            return prev;
+            return updated;
         });
-    };
-
-    const flipCard = (id: number, flip = true) => {
-        setCards((prev) =>
-            prev.map((c) => (c.id === id ? { ...c, isFlipped: flip } : c))
-        );
     };
 
     // Check for game end
